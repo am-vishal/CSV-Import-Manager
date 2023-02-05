@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>CSV-Import-Manager</title>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.0.1/css/bootstrap.min.css"
+      integrity="sha512-Ez0cGzNzHR1tYAv56860NLspgUGuQw16GiOOp/I2LuTmpSK9xDXlgJz3XN4cnpXWDmkNBKXR/VDMTCnAaEooxA=="
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.1/css/all.min.css"
+      integrity="sha512-MV7K8+y+gLIBoVD59lQIYicR65iaqukzvf/nwasF0nqhPay5w/9lJmVM2hMDcnK1OnMGCdVK+iQrJ7lzPJQd1w=="
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
+    />
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/v/dt/dt-1.10.22/datatables.min.css" />
+    <link rel="stylesheet" href="/styles/style.css" />
+  </head>
+  <body>
+    <% if(!showTableData) { %>
+    <div class="row mt-1 m-0 p-0 justify-content-center">
+      <div class="col-6 border" style="background-color: #f8feff">
+        <p class="h5 mt-2 text-center">CSV Import Manager</p>
+        <div class="form-group">
+          <div class="custom-file">
+            <div class="d-flex justify-content-end" style="transform: translateY(10px)">
+              <button type="button" class="btn btn-outline-secondary btn-sm" onclick="downloadFile()">
+                Download sample CSV file
+                <i class="fa fa-download" aria-hidden="true"></i>
+              </button>
+            </div>
+            <form action="/" method="post" enctype="multipart/form-data">
+              <input id="fileInput" name="csv" style="cursor: pointer" type="file" class="d-none custom-file-input" onchange="uploadFile()" accept=".csv" multiple required />
+              <label class="custom-file-label" for="fileInput">Drag and drop <b>.csv</b> files here or click to browse</label>
+              <div class="d-flex justify-content-center mt-1 mb-2">
+                <button type="submit" class="btn btn-primary btn-sm">Upload File</button>
+              </div>
+            </form>
+          </div>
+        </div>
+        <% if(csvFiles.length>0) { %>
+        <div class="mt-2">
+          <p class="h5 bg-light border border-bottom-0 m-0 p-1 text-center">All Uploaded <b class="text-primary">.CSV</b> files</p>
+          <div class="mb-3">
+            <ul class="list-group rounded-0">
+              <% for(var i = 0; i < csvFiles.length; i++) { %>
+              <li class="list-group-item">
+                <a href="/csv-data/<%= csvFiles[i].data.fileName %>"> <%= csvFiles[i].data.fileName %> </a>
+              </li>
+              <% } %>
+            </ul>
+          </div>
+        </div>
+        <% } %>
+      </div>
+    </div>
+    <% } %> <% if(showTableData) { %>
+    <div class="container">
+      <!-- BEGIN -->
+      <div class="row">
+        <div class="col-md-10 offset-md-1">
+          <div class="card my-5">
+            <span class="position-absolute m-3">
+              <a type="button" href="/" class="btn btn-sm btn-outline-secondary border"> <i class="fa-solid fa-arrow-left"></i> Back to Home </a>
+            </span>
+            <div class="card-body row">
+              <span class="text-center h5">
+                Data from
+                <p class="d-inline text-primary"><%= data.fileName %></p>
+              </span>
+              <div style="min-width: 206px" class="form-group col-3 my-3">
+                <label for="search">Search Based On: <b><%= Object.keys(data.csvData[0])[0] %></b></label>
+                <input type="text" class="form-control" id="search" placeholder="" onkeyup="search()" />
+              </div>
+              <div class="table-responsive" id="tableContainer">
+                <div class="overflow-auto wrapper-class" id="scrollbar">
+                  <table id="myTable" class="table table-bordered">
+                    <thead>
+                      <tr>
+                        <% for (const key in data.csvData[0]) { %>
+                        <th data-sort="<%= key %>"><%= key %></th>
+                        <% } %>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <% for (let i = 0; i < data.csvData.length; i++) { %>
+                      <tr>
+                        <% for (const key in data.csvData[i]) { %>
+                        <td><%= data.csvData[i][key] %></td>
+                        <% } %>
+                      </tr>
+                      <% } %>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- END -->
+    </div>
+    <% } %>
+
+    <script
+      src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.3/jquery.min.js"
+      integrity="sha512-STof4xm1wgkfm7heWqFJVn58Hm3EtS31XFaagaa8VMReCXAkQnJZ+jEy8PCC/iT18dFy95WcExNHFTqLyp72eQ=="
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
+    ></script>
+
+    <script type="text/javascript" src="https://cdn.datatables.net/v/dt/dt-1.10.22/datatables.min.js"></script>
+
+    <script>
+      $(document).ready(function () {
+        $("#myTable").DataTable({
+          pageLength: 100,
+          searching: false,
+        });
+      });
+
+      function search() {
+        var input, filter, table, tr, td, i, txtValue;
+        input = document.getElementById("search");
+        filter = input.value.toUpperCase();
+        table = document.getElementsByTagName("table")[0];
+        tr = table.getElementsByTagName("tr");
+        for (i = 0; i < tr.length; i++) {
+          td = tr[i].getElementsByTagName("td")[0];
+          if (td) {
+            txtValue = td.textContent || td.innerText;
+            if (txtValue.toUpperCase().indexOf(filter) > -1) {
+              tr[i].style.display = "";
+            } else {
+              tr[i].style.display = "none";
+            }
+          }
+        }
+      }
+    </script>
+  </body>
+</html>
