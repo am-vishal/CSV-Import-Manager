@@ -5,6 +5,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>CSV-Import-Manager</title>
+    <link rel="icon" href="/images/import.png" type="image/x-icon" />
     <link
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.0.1/css/bootstrap.min.css"
@@ -30,20 +31,21 @@
         <div class="form-group">
           <div class="custom-file">
             <div class="d-flex justify-content-end" style="transform: translateY(10px)">
-              <button
+              <a
                 id="downloadBtn"
                 type="button"
                 class="btn btn-outline-secondary btn-sm"
                 data-toggle="tooltip"
                 data-placement="left"
                 title="The sample CSV file will only be downloaded once"
+                href="https://drive.google.com/uc?export=download&id=104RJqzK56zWA_Rm5GSVaMai4_HxjkVv4"
               >
                 Download sample CSV file
                 <i class="fa fa-download" aria-hidden="true"></i>
-              </button>
+              </a>
             </div>
             <form action="/" method="post" enctype="multipart/form-data">
-              <input id="fileInput" name="csv" style="cursor: pointer" type="file" class="d-none custom-file-input" accept=".csv" required />
+              <input id="fileInput" name="csv" style="cursor: pointer" type="file" class="custom-file-input" accept=".csv" required />
               <label class="custom-file-label" for="fileInput">Drag and drop <b>.csv</b> files here or click to browse</label>
               <div class="d-flex justify-content-center mt-1 mb-2">
                 <button type="submit" class="btn btn-primary btn-sm">Submit</button>
@@ -133,15 +135,6 @@
           pageLength: 100,
           searching: false,
         });
-      });
-
-      $("#downloadBtn").one("click", function () {
-        var csv = "/assets/csv-sample.csv";
-        var hiddenElement = document.createElement("a");
-        hiddenElement.href = "data:text/csv;charset=utf-8," + encodeURI(csv);
-        hiddenElement.target = "_blank";
-        hiddenElement.download = "csv-sample.csv";
-        hiddenElement.click();
       });
 
       function search() {
