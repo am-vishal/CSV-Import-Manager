@@ -30,19 +30,31 @@
         <div class="form-group">
           <div class="custom-file">
             <div class="d-flex justify-content-end" style="transform: translateY(10px)">
-              <button type="button" class="btn btn-outline-secondary btn-sm" onclick="downloadFile()">
+              <button
+                id="downloadBtn"
+                type="button"
+                class="btn btn-outline-secondary btn-sm"
+                data-toggle="tooltip"
+                data-placement="left"
+                title="The sample CSV file will only be downloaded once"
+              >
                 Download sample CSV file
                 <i class="fa fa-download" aria-hidden="true"></i>
               </button>
             </div>
             <form action="/" method="post" enctype="multipart/form-data">
-              <input id="fileInput" name="csv" style="cursor: pointer" type="file" class="d-none custom-file-input" onchange="uploadFile()" accept=".csv" multiple required />
+              <input id="fileInput" name="csv" style="cursor: pointer" type="file" class="d-none custom-file-input" accept=".csv" required />
               <label class="custom-file-label" for="fileInput">Drag and drop <b>.csv</b> files here or click to browse</label>
               <div class="d-flex justify-content-center mt-1 mb-2">
-                <button type="submit" class="btn btn-primary btn-sm">Upload File</button>
+                <button type="submit" class="btn btn-primary btn-sm">Submit</button>
               </div>
             </form>
           </div>
+        </div>
+        <div class="m-0 p-1 alert alert-danger" role="alert">Please do not upload large CSV files as the database has limited storage capacity.</div>
+        <div class="my-2 p-1 alert alert-danger" role="alert">
+          If you encounter an issue where the uploaded data does not appear in the list, it may be due to server hibernation. In such cases, please refresh the page and check
+          again.
         </div>
         <% if(csvFiles.length>0) { %>
         <div class="mt-2">
@@ -62,7 +74,6 @@
     </div>
     <% } %> <% if(showTableData) { %>
     <div class="container">
-      <!-- BEGIN -->
       <div class="row">
         <div class="col-md-10 offset-md-1">
           <div class="card my-5">
@@ -104,7 +115,6 @@
           </div>
         </div>
       </div>
-      <!-- END -->
     </div>
     <% } %>
 
@@ -123,6 +133,15 @@
           pageLength: 100,
           searching: false,
         });
+      });
+
+      $("#downloadBtn").one("click", function () {
+        var csv = "/assets/csv-sample.csv";
+        var hiddenElement = document.createElement("a");
+        hiddenElement.href = "data:text/csv;charset=utf-8," + encodeURI(csv);
+        hiddenElement.target = "_blank";
+        hiddenElement.download = "csv-sample.csv";
+        hiddenElement.click();
       });
 
       function search() {

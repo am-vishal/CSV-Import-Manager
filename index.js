@@ -40,8 +40,6 @@ app.post("/", multipartMiddleware, (req, res) => {
 app.get("/csv-data/:fileName", (req, res) => {
   File.findOne({ "data.fileName": req.params.fileName }, (_err, data) => {
     try {
-      console.log(data);
-      // file is the found object with the matching fileName
       res.render("csv", {
         showTableData: true,
         data: data.data,
