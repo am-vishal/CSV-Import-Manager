@@ -4,6 +4,7 @@
     <meta charset="UTF-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="author" content="Vishal Kumar(https://github.com/am-vishal)" />
     <title>CSV-Import-Manager</title>
     <link rel="icon" href="/images/import.png" type="image/x-icon" />
     <link
@@ -24,6 +25,7 @@
     <link rel="stylesheet" href="/styles/style.css" />
   </head>
   <body>
+    <!-- Conditional to check if table data should not be displayed -->
     <% if(!showTableData) { %>
     <div class="row mt-1 m-0 p-0 justify-content-center">
       <div class="col-6 border" style="background-color: #f8feff">
@@ -58,6 +60,7 @@
           If you encounter an issue where the uploaded data does not appear in the list, it may be due to server hibernation. In such cases, please refresh the page and check
           again.
         </div>
+        <!-- Display list of all uploaded CSV files -->
         <% if(csvFiles.length>0) { %>
         <div class="mt-2">
           <p class="h5 bg-light border border-bottom-0 m-0 p-1 text-center">All Uploaded <b class="text-primary">.CSV</b> files</p>
@@ -88,6 +91,7 @@
                 <p class="d-inline text-primary"><%= data.fileName %></p>
               </span>
               <div style="min-width: 206px" class="form-group col-3 my-3">
+                <!-- Label for searching based on the first key of the csv data object -->
                 <label for="search">Search Based On: <b><%= Object.keys(data.csvData[0])[0] %></b></label>
                 <input type="text" class="form-control" id="search" placeholder="" onkeyup="search()" />
               </div>
@@ -96,14 +100,17 @@
                   <table id="myTable" class="table table-bordered">
                     <thead>
                       <tr>
+                        <!-- Loop through object keys to display table headers -->
                         <% for (const key in data.csvData[0]) { %>
                         <th data-sort="<%= key %>"><%= key %></th>
                         <% } %>
                       </tr>
                     </thead>
                     <tbody>
+                      <!-- Loop through all the rows of the data and create a table row for each -->
                       <% for (let i = 0; i < data.csvData.length; i++) { %>
                       <tr>
+                        <!-- Loop through all the keys of the current row and create a table cell for each -->
                         <% for (const key in data.csvData[i]) { %>
                         <td><%= data.csvData[i][key] %></td>
                         <% } %>
@@ -120,6 +127,7 @@
     </div>
     <% } %>
 
+    <!-- Adding the jQuery and Datatables library references -->
     <script
       src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.3/jquery.min.js"
       integrity="sha512-STof4xm1wgkfm7heWqFJVn58Hm3EtS31XFaagaa8VMReCXAkQnJZ+jEy8PCC/iT18dFy95WcExNHFTqLyp72eQ=="
@@ -130,26 +138,39 @@
     <script type="text/javascript" src="https://cdn.datatables.net/v/dt/dt-1.10.22/datatables.min.js"></script>
 
     <script>
+      // This script initializes a DataTable with specific configuration options on page load
       $(document).ready(function () {
         $("#myTable").DataTable({
-          pageLength: 100,
-          searching: false,
+          pageLength: 100, // The number of rows to display per page
+          searching: false, // Disable the search bar
         });
       });
 
+      // This function filters the table based on the user's search input
       function search() {
         var input, filter, table, tr, td, i, txtValue;
+        // Get the search input element
         input = document.getElementById("search");
+        // Convert the search input to uppercase
         filter = input.value.toUpperCase();
+        // Get the table element
         table = document.getElementsByTagName("table")[0];
+        // Get all the table rows
         tr = table.getElementsByTagName("tr");
+        // Loop through all the rows
         for (i = 0; i < tr.length; i++) {
+          // Get the first column of the current row
           td = tr[i].getElementsByTagName("td")[0];
+          // If the first column exists
           if (td) {
+            // Get the text content of the first column
             txtValue = td.textContent || td.innerText;
+            // If the search input exists in the first column text
             if (txtValue.toUpperCase().indexOf(filter) > -1) {
+              // Show the row
               tr[i].style.display = "";
             } else {
+              // Hide the row
               tr[i].style.display = "none";
             }
           }

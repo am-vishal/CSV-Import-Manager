@@ -1,21 +1,24 @@
-// Express.js and EJS setup
-const express = require("express"); // Importing the express framework
-const app = express(); // Creating an instance of express application
-const path = require("path"); // Importing the path module for handling file paths
-var multipart = require("connect-multiparty"); // Importing the connect-multiparty library for handling file uploads
-const CSVToJSON = require("csvtojson"); // Importing the csvtojson library for converting CSV to JSON
-const File = require("./models/fileSchema"); // Importing the File model that defines the file schema in MongoDB
-const db = require("./config/mongoose");
-const utils = require("./utils/utils");
-var multipartMiddleware = multipart(); // Instantiating the connect-multiparty middleware
+// Import the necessary modules for the Express.js and EJS setup
+const express = require("express"); // Express.js framework
+const app = express(); // Instance of the express application
+const path = require("path"); // Path module for handling file paths
+var multipart = require("connect-multiparty"); // Library for handling file uploads
+const CSVToJSON = require("csvtojson"); // Library for converting CSV to JSON
+const File = require("./models/fileSchema"); // File model for the file schema in MongoDB
+const db = require("./config/mongoose"); // Importing the MongoDB configuration file
+const utils = require("./utils/utils"); // Utility functions
+var multipartMiddleware = multipart(); // Instance of the connect-multiparty middleware
 
-app.set("views", path.join(__dirname, "views")); // Setting the path for views directory
-app.set("view engine", "ejs"); // Setting the view engine as ejs
-app.use(express.static(path.join(__dirname, "assets"))); // Serve static files from the public directory
-app.engine("ejs", require("ejs").renderFile); // Setting the renderFile method as the rendering engine for ejs files
+// Set up the views directory and view engine
+app.set("views", path.join(__dirname, "views"));
+app.set("view engine", "ejs");
+app.use(express.static(path.join(__dirname, "assets"))); // Serve static files from the assets directory
+app.engine("ejs", require("ejs").renderFile); // Set the renderFile method as the EJS rendering engine
 
+// Parse incoming request bodies as URL-encoded data
 app.use(express.urlencoded({ extended: true }));
 
+// Get request for the '/' endpoint, find all files and render the 'csv' view with their file names
 app.get("/", (_req, res) => {
   File.find({}, { "data.fileName": 1 }, (_err, csvFiles) => {
     try {
@@ -24,6 +27,7 @@ app.get("/", (_req, res) => {
   });
 });
 
+// Post request for the '/' endpoint, use connect-multiparty to handle file uploads, convert the uploaded CSV to JSON and store it in MongoDB
 app.post("/", multipartMiddleware, (req, res) => {
   CSVToJSON()
     .fromFile(req.files.csv.path)
@@ -46,6 +50,7 @@ app.post("/", multipartMiddleware, (req, res) => {
   return res.redirect("back");
 });
 
+// Get request for the '/csv-data/:fileName' endpoint, find the file in MongoDB by its name and render the 'csv' view with its data
 app.get("/csv-data/:fileName", (req, res) => {
   File.findOne({ "data.fileName": req.params.fileName }, (_err, data) => {
     try {
