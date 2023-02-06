@@ -6,6 +6,7 @@ var multipart = require("connect-multiparty"); // Importing the connect-multipar
 const CSVToJSON = require("csvtojson"); // Importing the csvtojson library for converting CSV to JSON
 const File = require("./models/fileSchema"); // Importing the File model that defines the file schema in MongoDB
 const db = require("./config/mongoose");
+const utils = require("./utils/utils");
 var multipartMiddleware = multipart(); // Instantiating the connect-multiparty middleware
 
 app.set("views", path.join(__dirname, "views")); // Setting the path for views directory
@@ -27,12 +28,20 @@ app.post("/", multipartMiddleware, (req, res) => {
   CSVToJSON()
     .fromFile(req.files.csv.path)
     .then((datas) => {
-      File.create({
-        data: {
-          fileName: req.files.csv.name,
-          csvData: datas,
-        },
-      });
+      if (req.files.csv.type === "text/csv") {
+        try {
+          if (!utils.isNullorWhiteSpace(datas) && utils.isArray(datas)) {
+            File.create({
+              data: {
+                fileName: req.files.csv.name,
+                csvData: datas,
+              },
+            });
+          }
+        } catch (err) {
+          console.error(err, "The uploaded data is not in the standard CSV format.");
+        }
+      }
     });
   return res.redirect("back");
 });
