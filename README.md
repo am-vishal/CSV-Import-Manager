@@ -4,10 +4,15 @@
 
 ## Features
 
-- Upload .csv files
+- Upload .csv files(Drag and drop .csv file upload)
 - View uploaded .csv files in tabular format
 - Download a sample .csv file to use as reference
 - Error alerts for uploading large files and possible hibernation issues with the server
+- Displays a table of data from a CSV file
+- Uses Bootstrap for styling
+- Searching table data: Allows searching based on the first key of the data object
+- Sorting table data: The table data can be sorted based on the column headers by clicking on them.
+- Pagination: The table data has been paginated to make it easier to navigate and view.
 
 ## Getting Started
 
