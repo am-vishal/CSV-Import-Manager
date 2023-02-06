@@ -51,18 +51,20 @@ http://localhost:8000/
 ```
 
 ## Built With
-
 - EJS
 - CSS
-- Bootstrap 5
-- Font Awesome
+- JavaScript(jQuery)
 - Node.js
 - Express
 - MongoDB
+
+## Dependencies
 - Mongoose
 - csvtojson
 - connect-multiparty
-- dotenv
+- Bootstrap v5.0.1
+- Font Awesome v6.2.1
+- DataTables v1.10.22
 
 ## Contributing
 
